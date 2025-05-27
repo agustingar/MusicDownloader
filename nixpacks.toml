@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ['nodejs_18', 'python3', 'python3Packages.pip', 'ffmpeg']
+
+[phases.install]
+cmds = [
+  'cd backend && npm ci',
+  'pip3 install yt-dlp'
+]
+
+[start]
+cmd = 'cd backend && npm start' 
