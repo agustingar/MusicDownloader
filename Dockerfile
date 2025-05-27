@@ -1,10 +1,10 @@
-# Usar imagen base de Node.js
+# Music Downloader - Dockerfile simplificado (actualizado 2025-01-27)
 FROM node:18-slim
 
 # Instalar solo lo esencial
 RUN apt-get update && apt-get install -y curl ffmpeg && rm -rf /var/lib/apt/lists/*
 
-# Instalar yt-dlp directamente
+# Instalar yt-dlp directamente (SIN pip3)
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && chmod +x /usr/local/bin/yt-dlp
 
 # Crear directorio de trabajo
