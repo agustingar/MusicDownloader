@@ -4,12 +4,16 @@
   "description": "Music Downloader App with Backend",
   "main": "backend/server.js",
   "scripts": {
-    "start": "cd backend && npm start",
-    "postinstall": "cd backend && npm install"
+    "start": "cd backend && node server.js",
+    "postinstall": "cd backend && npm install --only=production"
   },
   "engines": {
     "node": "18.x"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "uuid": "^8.3.2"
+  },
   "devDependencies": {}
 }
