@@ -1,6 +1,5 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "cd backend && npm ci"
 
 [deploy]
 startCommand = "cd backend && node server.js"
@@ -8,5 +7,4 @@ healthcheckPath = "/health"
 restartPolicyType = "ON_FAILURE"
 
 [env]
-NO_CACHE = "1"
 NODE_ENV = "production" 
