@@ -12,9 +12,14 @@ ios/
 scripts/
 temp_*
 .expo/
+.expo-shared
 .nixpacks
 .railway-ignore-docker
 GUIA_*
 COMPARTIR_*
 BACKEND_*
-*.md 
+*.md
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 
