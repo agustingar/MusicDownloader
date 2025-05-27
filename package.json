@@ -1,12 +1,14 @@
 {
   "name": "music-downloader",
   "version": "1.0.0",
+  "description": "Music Downloader API Server",
   "main": "app/index.js",
   "scripts": {
-    "start": "node app/index.js"
+    "start": "node app/index.js",
+    "build": "echo 'No build step required'"
   },
   "engines": {
-    "node": "18"
+    "node": "18.x"
   },
   "dependencies": {
     "express": "^4.18.2",
