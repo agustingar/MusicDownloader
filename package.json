@@ -1,23 +1,16 @@
 {
   "name": "music-downloader",
   "version": "1.0.0",
-  "description": "Music Downloader API Server",
   "main": "app/index.js",
   "scripts": {
-    "start": "node app/index.js",
-    "dev": "node app/index.js",
-    "build": "echo 'No build step required'",
-    "postinstall": "echo 'Dependencies installed successfully'"
+    "start": "node app/index.js"
   },
   "engines": {
-    "node": "18.x"
+    "node": "18"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "uuid": "^9.0.0"
-  },
-  "keywords": ["music", "downloader", "youtube", "mp3", "api"],
-  "author": "Music Downloader Team",
-  "license": "MIT"
+  }
 }
