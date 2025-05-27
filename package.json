@@ -2,10 +2,10 @@
   "name": "music-downloader",
   "version": "1.0.0",
   "description": "Music Downloader API Server",
-  "main": "server.js",
+  "main": "app/index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "node app/index.js",
+    "dev": "node app/index.js",
     "build": "echo 'No build step required'",
     "postinstall": "echo 'Dependencies installed successfully'"
   },

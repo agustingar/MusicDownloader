@@ -5,10 +5,11 @@ nixPkgs = ["nodejs_18", "ffmpeg", "yt-dlp"]
 cmds = ["npm ci --only=production"]
 
 [phases.build]
-cmds = ["echo 'No build step required'"]
+cmds = ["echo 'Build completed successfully'"]
 
 [start]
-cmd = "node server.js"
+cmd = "node app/index.js"
 
 [variables]
-NODE_ENV = "production" 
+NODE_ENV = "production"
+PORT = "3000" 
