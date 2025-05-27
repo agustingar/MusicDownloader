@@ -23,7 +23,7 @@ class ApiService {
     for (const url of BACKEND_URLS) {
       try {
         console.log(`⏳ Probando: ${url}`);
-        const response = await axios.get(`${url}/api/health`, { timeout: 5000 });
+        const response = await axios.get(`${url}/health`, { timeout: 5000 });
         
         if (response.status === 200) {
           this.baseUrl = url;
@@ -108,7 +108,7 @@ class ApiService {
     await this.ensureInitialized();
     
     try {
-      const response = await axios.get(`${this.baseUrl}/api/health`, {
+      const response = await axios.get(`${this.baseUrl}/health`, {
         timeout: 5000
       });
       return response.data;

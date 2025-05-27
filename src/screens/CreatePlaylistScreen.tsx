@@ -10,14 +10,77 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+// Importar ImagePicker de forma segura
+let ImagePicker: any = null;
+try {
+  ImagePicker = require('expo-image-picker');
+  console.log('ImagePicker cargado correctamente en CreatePlaylistScreen');
+} catch (error) {
+  console.warn('expo-image-picker no está disponible:', error);
+}
+
 import PlaylistService from '../services/PlaylistService';
+
+const { width } = Dimensions.get('window');
 
 const CreatePlaylistScreen = ({ navigation }: any) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+
+  const handleSelectImage = async () => {
+    // Verificar si ImagePicker está disponible
+    if (!ImagePicker) {
+      Alert.alert(
+        'Función no disponible',
+        'El selector de imagen no está disponible en este momento. Puedes crear la playlist sin imagen por ahora.'
+      );
+      return;
+    }
+    
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permisos necesarios',
+          'Necesitamos acceso a tu galería para seleccionar una imagen'
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error al seleccionar imagen:', error);
+      Alert.alert('Error', 'No se pudo seleccionar la imagen');
+    }
+  };
+
+  const handleRemoveImage = () => {
+    Alert.alert(
+      'Eliminar imagen',
+      '¿Estás seguro de que quieres eliminar la imagen?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', onPress: () => setImage(null) }
+      ]
+    );
+  };
 
   // Función para crear una nueva playlist
   const handleCreatePlaylist = async () => {
@@ -30,8 +93,12 @@ const CreatePlaylistScreen = ({ navigation }: any) => {
     try {
       setIsCreating(true);
       
-      // Crear la playlist
-      const playlist = await PlaylistService.createPlaylist(name, description);
+      // Crear la playlist con imagen
+      const playlist = await PlaylistService.createPlaylist(
+        name.trim(), 
+        image, 
+        description.trim()
+      );
       
       // Mostrar mensaje de éxito
       Alert.alert(
@@ -66,53 +133,89 @@ const CreatePlaylistScreen = ({ navigation }: any) => {
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.title}>Crear Playlist</Text>
-          <View style={{ width: 24 }} />
+          <TouchableOpacity
+            onPress={handleCreatePlaylist}
+            style={[styles.createButton, (isCreating || !name.trim()) && styles.disabledButton]}
+            disabled={isCreating || !name.trim()}
+          >
+            <Text style={styles.createButtonText}>
+              {isCreating ? 'Creando...' : 'Crear'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.content}>
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Nombre</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre de la playlist"
-              value={name}
-              onChangeText={setName}
-              maxLength={30}
-            />
-            <Text style={styles.charCount}>{name.length}/30</Text>
+          {/* Sección de imagen */}
+          <View style={styles.imageSection}>
+            <TouchableOpacity
+              style={styles.imageContainer}
+              onPress={handleSelectImage}
+            >
+              {image ? (
+                <>
+                  <Image source={{ uri: image }} style={styles.playlistImage} />
+                  <View style={styles.imageOverlay}>
+                    <Ionicons name="camera" size={24} color="#fff" />
+                  </View>
+                </>
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <Ionicons name="camera" size={32} color="#666" />
+                  <Text style={styles.imagePlaceholderText}>Agregar imagen</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+            
+            {image && (
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={handleRemoveImage}
+              >
+                <Ionicons name="trash-outline" size={16} color="#ff4444" />
+                <Text style={styles.removeImageText}>Eliminar imagen</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Descripción (opcional)</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Describe tu playlist..."
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              maxLength={100}
-            />
-            <Text style={styles.charCount}>{description.length}/100</Text>
+          {/* Formulario */}
+          <View style={styles.formSection}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Nombre de la playlist</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ingresa el nombre"
+                placeholderTextColor="#666"
+                value={name}
+                onChangeText={setName}
+                maxLength={50}
+              />
+              <Text style={styles.charCount}>{name.length}/50</Text>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Descripción (opcional)</Text>
+              <TextInput
+                style={[styles.input, styles.textArea]}
+                placeholder="Describe tu playlist..."
+                placeholderTextColor="#666"
+                value={description}
+                onChangeText={setDescription}
+                multiline
+                numberOfLines={3}
+                maxLength={150}
+              />
+              <Text style={styles.charCount}>{description.length}/150</Text>
+            </View>
           </View>
 
           <View style={styles.infoContainer}>
-            <Ionicons name="information-circle-outline" size={24} color="#666" />
+            <Ionicons name="information-circle-outline" size={20} color="#1DB954" />
             <Text style={styles.infoText}>
               Puedes añadir canciones a tu playlist después de crearla. Para ello, busca y descarga
               canciones desde la pantalla de búsqueda.
             </Text>
           </View>
         </ScrollView>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={handleCreatePlaylist}
-            disabled={isCreating || !name.trim()}
-          >
-            <Text style={styles.buttonText}>Crear Playlist</Text>
-          </TouchableOpacity>
-        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -121,7 +224,7 @@ const CreatePlaylistScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#121212',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -130,76 +233,137 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#6200ee',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#1a1a1a',
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#fff',
+  },
+  createButton: {
+    backgroundColor: '#1DB954',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  createButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  disabledButton: {
+    backgroundColor: '#666',
   },
   content: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
-  formGroup: {
-    marginBottom: 24,
+  imageSection: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  imageContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  playlistImage: {
+    width: '100%',
+    height: '100%',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#555',
+    borderStyle: 'dashed',
+  },
+  imagePlaceholderText: {
+    color: '#666',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  removeImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 16,
+  },
+  removeImageText: {
+    color: '#ff4444',
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  formSection: {
+    flex: 1,
+  },
+  inputGroup: {
+    marginBottom: 20,
   },
   label: {
+    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginBottom: 8,
-    color: '#333',
   },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: '#fff',
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#444',
   },
   textArea: {
-    height: 100,
+    height: 80,
     textAlignVertical: 'top',
   },
   charCount: {
-    alignSelf: 'flex-end',
-    marginTop: 4,
-    fontSize: 12,
     color: '#666',
+    fontSize: 12,
+    textAlign: 'right',
+    marginTop: 4,
   },
   infoContainer: {
     flexDirection: 'row',
-    backgroundColor: '#e0e0e0',
-    padding: 16,
+    alignItems: 'center',
+    backgroundColor: '#1a3d1a',
+    padding: 12,
     borderRadius: 8,
-    marginTop: 16,
+    marginTop: 10,
   },
   infoText: {
+    color: '#1DB954',
+    fontSize: 12,
+    marginLeft: 8,
     flex: 1,
-    marginLeft: 12,
-    fontSize: 14,
-    color: '#666',
-  },
-  buttonContainer: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  createButton: {
-    backgroundColor: '#6200ee',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 });
 
-export default CreatePlaylistScreen; 
+export default CreatePlaylistScreen;

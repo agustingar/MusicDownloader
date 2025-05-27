@@ -95,29 +95,45 @@ class PlaylistService {
     return newPlaylist;
   }
 
-  // Actualizar playlist
+  // Actualizar playlist completa
   async updatePlaylist(
-    id: string,
-    updates: { name?: string; description?: string; coverImage?: string; image?: string }
-  ): Promise<Playlist | null> {
-    const playlistIndex = this.playlists.findIndex(playlist => playlist.id === id);
-    
-    if (playlistIndex === -1) return null;
-    
-    const playlist = this.playlists[playlistIndex];
-    const updatedPlaylist: Playlist = {
-      ...playlist,
-      ...updates,
-      // Sincronizar image y coverImage
-      image: updates.image || updates.coverImage || playlist.image,
-      coverImage: updates.coverImage || updates.image || playlist.coverImage,
-      updatedAt: new Date().toISOString(),
-    };
-    
-    this.playlists[playlistIndex] = updatedPlaylist;
-    await this.savePlaylists();
-    
-    return updatedPlaylist;
+    playlistId: string, 
+    updates: { name?: string; description?: string; image?: string | null }
+  ): Promise<boolean> {
+    try {
+      const playlistIndex = this.playlists.findIndex(p => p.id === playlistId);
+      
+      if (playlistIndex === -1) {
+        console.error('Playlist no encontrada:', playlistId);
+        return false;
+      }
+
+      // Actualizar los campos proporcionados
+      const playlist = this.playlists[playlistIndex];
+      
+      if (updates.name !== undefined) {
+        playlist.name = updates.name;
+      }
+      
+      if (updates.description !== undefined) {
+        playlist.description = updates.description;
+      }
+      
+      if (updates.image !== undefined) {
+        playlist.image = updates.image || undefined;
+        playlist.coverImage = updates.image || undefined; // Para compatibilidad
+      }
+      
+      playlist.updatedAt = new Date().toISOString();
+      
+      await this.savePlaylists();
+      console.log('Playlist actualizada:', playlist);
+      
+      return true;
+    } catch (error) {
+      console.error('Error al actualizar playlist:', error);
+      return false;
+    }
   }
 
   // Eliminar playlist

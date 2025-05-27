@@ -18,6 +18,7 @@ import PlaylistService from '../services/PlaylistService';
 import { Player, cleanupPlayer, closePlayerCompletely } from '../components/Player';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import EditPlaylistModal from '../components/EditPlaylistModal';
 
 const PlaylistDetailScreen = ({ route, navigation }: any) => {
   const { playlist: initialPlaylist } = route.params;
@@ -26,6 +27,7 @@ const PlaylistDetailScreen = ({ route, navigation }: any) => {
   const [showFullPlayer, setShowFullPlayer] = useState(false);
   const [currentPlayerState, setCurrentPlayerState] = useState(PlayerService.getState());
   const [isLoading, setIsLoading] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Recargar datos cuando la pantalla obtiene el foco
   useFocusEffect(
@@ -159,6 +161,34 @@ const PlaylistDetailScreen = ({ route, navigation }: any) => {
     );
   };
 
+  // Función para editar la playlist
+  const handleEditPlaylist = async (updatedData: { name: string; description?: string; image?: string | null }) => {
+    try {
+      const success = await PlaylistService.updatePlaylist(playlist.id, updatedData);
+      
+      if (success) {
+        // Actualizar la playlist local
+        const updatedPlaylist = PlaylistService.getPlaylistById(playlist.id);
+        if (updatedPlaylist) {
+          setPlaylist(updatedPlaylist);
+          // Actualizar el título en la navegación
+          navigation.setOptions({ title: updatedPlaylist.name });
+        }
+        
+        Alert.alert(
+          'Éxito',
+          'La playlist ha sido actualizada correctamente',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Alert.alert('Error', 'No se pudo actualizar la playlist');
+      }
+    } catch (error) {
+      console.error('Error al actualizar playlist:', error);
+      Alert.alert('Error', 'Ocurrió un error al actualizar la playlist');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -177,13 +207,9 @@ const PlaylistDetailScreen = ({ route, navigation }: any) => {
                   style: 'cancel'
                 },
                 {
-                  text: 'Cambiar nombre',
+                  text: 'Editar playlist',
                   onPress: () => {
-                    // Aquí iría la lógica para cambiar el nombre
-                    Alert.alert(
-                      'Cambiar nombre',
-                      'Esta función estará disponible pronto'
-                    );
+                    setShowEditModal(true);
                   }
                 },
                 {
@@ -313,6 +339,14 @@ const PlaylistDetailScreen = ({ route, navigation }: any) => {
       <Player 
         visible={showFullPlayer} 
         onClose={() => setShowFullPlayer(false)} 
+      />
+
+      {/* Modal de edición de playlist */}
+      <EditPlaylistModal
+        visible={showEditModal}
+        playlist={playlist}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleEditPlaylist}
       />
     </SafeAreaView>
   );
