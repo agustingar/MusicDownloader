@@ -4,12 +4,11 @@ FROM node:18-slim
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     python3 \
-    python3-pip \
     ffmpeg \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar yt-dlp usando el método recomendado
+# Instalar yt-dlp usando el método recomendado (descarga directa)
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp
 
