@@ -4,10 +4,9 @@ import axios from 'axios';
 // URLs de backend disponibles (en orden de prioridad)
 const BACKEND_URLS = [
   'http://localhost:3000', // Servidor local (primera prioridad)
-  'https://tu-app.up.railway.app', // Railway - CAMBIA ESTA URL por la que te dé Railway
+  'https://musicdownloader-production-6a60.up.railway.app', // Railway - URL real
   'http://192.168.0.54:3000', // IP local para dispositivos en la misma red
   'https://tu-dominio.com', // Tu servidor propio (cambiar por tu dominio real)
-  'https://music-downloader-backend-production.up.railway.app', // Railway (ejemplo)
 ];
 
 class ApiService {

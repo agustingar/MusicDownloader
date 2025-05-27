@@ -5,15 +5,20 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "postinstall": "npm install --only=production"
+    "dev": "node server.js",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "engines": {
-    "node": "18.x"
+    "node": "18.x",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "keywords": ["music", "downloader", "youtube", "mp3"],
+  "author": "Music Downloader Team",
+  "license": "MIT"
 }
