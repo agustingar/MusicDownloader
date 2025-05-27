@@ -2,10 +2,10 @@
 nixPkgs = ["nodejs_18", "ffmpeg", "yt-dlp"]
 
 [phases.install]
-cmds = ["cd backend && npm ci --only=production"]
+cmds = ["npm install", "cd backend && npm ci --only=production"]
 
 [start]
-cmd = "cd backend && npm start"
+cmd = "node start.js"
 
 [variables]
 NODE_ENV = 'production' 

@@ -2,9 +2,9 @@
   "name": "music-downloader",
   "version": "1.0.0",
   "description": "Music Downloader App with Backend",
-  "main": "backend/server.js",
+  "main": "start.js",
   "scripts": {
-    "start": "cd backend && npm start",
+    "start": "node start.js",
     "install": "cd backend && npm install",
     "build": "cd backend && npm install --only=production"
   },
