@@ -4,8 +4,9 @@ import axios from 'axios';
 // URLs de backend disponibles (en orden de prioridad)
 const BACKEND_URLS = [
   'http://localhost:3000', // Servidor local (primera prioridad)
-  'https://musicdownloader-production-6a60.up.railway.app', // Railway - URL real
+  'https://musicdownloader-85gv.onrender.com', // Render - Funcionando perfectamente
   'http://192.168.0.54:3000', // IP local para dispositivos en la misma red
+  'https://musicdownloader-production-6a60.up.railway.app', // Railway - Con problemas
   'https://tu-dominio.com', // Tu servidor propio (cambiar por tu dominio real)
 ];
 
