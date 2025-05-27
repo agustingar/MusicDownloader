@@ -5,4 +5,8 @@ nixPkgs = ['nodejs_18', 'ffmpeg', 'yt-dlp']
 cmds = ['cd backend && npm ci']
 
 [start]
-cmd = 'cd backend && node server.js' 
+cmd = 'cd backend && node server.js'
+
+[variables]
+NO_CACHE = '1'
+NODE_ENV = 'production' 
