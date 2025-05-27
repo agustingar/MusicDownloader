@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ['nodejs_18', 'ffmpeg', 'yt-dlp']
+nixPkgs = ["nodejs_18", "ffmpeg", "yt-dlp"]
 
 [phases.install]
-cmds = ['npm ci --only=production']
+cmds = ["cd backend && npm ci --only=production"]
 
 [start]
-cmd = 'node server.js'
+cmd = "cd backend && npm start"
 
 [variables]
 NODE_ENV = 'production' 

@@ -2,7 +2,8 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "cd backend && npm start"
+startCommand = "npm start"
+workingDirectory = "backend"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "always"
